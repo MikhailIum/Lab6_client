@@ -24,6 +24,8 @@ public class Client {
     private static SocketChannel sc;
     public static boolean executing = false;
 
+    public static String login;
+    public static String password;
 
     private static SocketChannel find_socket() throws IOException {
         SocketChannel socket = SocketChannel.open();
@@ -32,7 +34,7 @@ public class Client {
             System.out.println("Server is ready");
             listener = new Listener();
             sc = socket;
-            request(socket, listener.start());
+//            request(socket, listener.start());
         } catch (Exception ex){
             System.out.println("Connection refused...");
         }
@@ -63,6 +65,7 @@ public class Client {
         try{
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            data.setLogin(login);
             objectOutputStream.writeObject(data);
             objectOutputStream.close();
 
@@ -96,6 +99,7 @@ public class Client {
         try{
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            data.setLogin(login);
             objectOutputStream.writeObject(data);
             objectOutputStream.close();
 
@@ -130,19 +134,53 @@ public class Client {
         return true;
     }
 
+    public static void authorisation() throws IOException, ClassNotFoundException {
+        boolean isAuthorised = false;
+        System.out.println(TextColor.ANSI_YELLOW + "Please, sign-in before using the app" + TextColor.ANSI_RESET);
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        while (!isAuthorised){
+            System.out.print("Login: ");
+            login = in.readLine();
+            Message loginMessage = requestWithAnswer(Data.createData("login", new String[]{login}));
+            if (loginMessage != null)
+                System.out.println(TextColor.ANSI_YELLOW + loginMessage.text + TextColor.ANSI_RESET);
+
+            System.out.print("Password: ");
+            password = in.readLine();
+            Message passwordMessage = requestWithAnswer(Data.createData("password", new String[]{login, password}));
+            if (passwordMessage != null)
+                System.out.println(TextColor.ANSI_RED + passwordMessage.text + TextColor.ANSI_RESET);
+            else {
+                isAuthorised = true;
+            }
+            System.out.println();
+        }
+        System.out.println(TextColor.ANSI_YELLOW + "You authorised successfully!" + TextColor.ANSI_RESET);
+    }
+
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2){
-            System.out.println(TextColor.ANSI_YELLOW + "Please add a port and a host as an argument" + TextColor.ANSI_RESET);
+            System.out.println(TextColor.ANSI_YELLOW + "Please add a port and a host as an argument: " + TextColor.ANSI_RESET);
             System.exit(0);
         } else {
             PORT = Integer.parseInt(args[0]);
             HOST = args[1];
         }
         SocketChannel socket = connect();
+        authorisation();
+        boolean isAuthorised = true;
+        request(socket, listener.start());
+
         while (true){
+            if (!isAuthorised){
+                authorisation();
+                isAuthorised = true;
+                request(socket, listener.start());
+            }
             if (!read(socket) || !request(socket, listener.listen())){
                 socket = connect();
+                isAuthorised = false;
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.commands;
 
 import com.auxiliary.Check;
+import com.auxiliary.CollectionException;
 import com.auxiliary.Message;
 import com.auxiliary.TextColor;
 import com.main.Client;
@@ -27,7 +28,6 @@ public class UpdateCommand extends Command {
         }
 
         StudyGroup toUpdate = message.group;
-
 
         return Data.createData("update_element", update(toUpdate));
     }

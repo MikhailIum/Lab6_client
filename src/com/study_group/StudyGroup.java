@@ -23,6 +23,8 @@ public class StudyGroup implements Serializable {
     private long shouldBeExpelled;
     private Semester semesterEnum;
 
+    private String user;
+
     public StudyGroup(
             String name,
             Coordinates coordinates,
@@ -42,6 +44,10 @@ public class StudyGroup implements Serializable {
         this.semesterEnum = semesterEnum;
         this.creationDate = creationDate;
         this.id = id;
+    }
+
+    public String getUser(){
+        return user;
     }
 
     /**

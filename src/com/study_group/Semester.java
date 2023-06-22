@@ -29,11 +29,11 @@ public enum Semester implements Serializable {
                 return FIRST;
             case ("2"):
                 return SECOND;
-            case ("4"):
+            case ("3"):
                 return FOURTH;
-            case ("6"):
+            case ("4"):
                 return SIXTH;
-            case ("7"):
+            case ("5"):
                 return SEVENTH;
             default:
                 return null;

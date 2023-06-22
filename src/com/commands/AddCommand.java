@@ -40,7 +40,7 @@ public class AddCommand extends Command {
             }
         }
         StudyGroup group = getStudyGroup(name, isNameSet);
-        return Data.createData("add", group);
+        return Data.createData("add", new String[]{Client.login}, group);
     }
 
     /**
